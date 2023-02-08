@@ -4,12 +4,13 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 
 const Movie = (props) => {
-  const { addToFavorites } = props;
+  const { addToFavorites, setMovies } = props;
 
   const [movie, setMovie] = useState("");
 
   const { id } = useParams();
   const { push } = useHistory();
+  console.log("moviee");
 
   useEffect(() => {
     axios
@@ -21,6 +22,16 @@ const Movie = (props) => {
         console.log(err.response);
       });
   }, [id]);
+
+  function handleDelete() {
+    axios
+      .delete(`http://localhost:9000/api/movies/${id}`)
+      .then((res) => {
+        setMovies(res.data);
+        push(`/movies`);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <div className="bg-white rounded-md shadow flex-1">
@@ -51,16 +62,23 @@ const Movie = (props) => {
       </div>
 
       <div className="px-5 py-3 border-t border-zinc-200 flex justify-end gap-2">
-        <button className="myButton bg-blue-600 hover:bg-blue-500 ">
+        <button
+          onClick={() => addToFavorites(movie)}
+          className="myButton bg-blue-600 hover:bg-blue-500 "
+        >
           Favorilere ekle
         </button>
         <Link
-          to={`/movies/edit/${movie.id}`}
+          to={`/movies/edit/${id}`}
           className="myButton bg-blue-600 hover:bg-blue-500"
         >
           Edit
         </Link>
-        <button type="button" className="myButton bg-red-600 hover:bg-red-500">
+        <button
+          onClick={handleDelete}
+          type="button"
+          className="myButton bg-red-600 hover:bg-red-500"
+        >
           Sil
         </button>
       </div>

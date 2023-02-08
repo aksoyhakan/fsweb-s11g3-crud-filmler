@@ -1,35 +1,36 @@
 import React, { useEffect, useState } from "react";
 
 import { Route, Switch, Redirect } from "react-router-dom";
-import MovieList from './components/MovieList';
-import Movie from './components/Movie';
+import MovieList from "./components/MovieList";
+import Movie from "./components/Movie";
+import EditMovieForm from "./components/EditMovieForm";
+import AddMovie from "./components/AddMovie";
 
-import MovieHeader from './components/MovieHeader';
+import MovieHeader from "./components/MovieHeader";
 
-import FavoriteMovieList from './components/FavoriteMovieList';
+import FavoriteMovieList from "./components/FavoriteMovieList";
 
-import axios from 'axios';
+import axios from "axios";
 
 const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:9000/api/movies')
-      .then(res => {
+    axios
+      .get("http://localhost:9000/api/movies")
+      .then((res) => {
         setMovies(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }, []);
 
-  const deleteMovie = (id) => {
-  }
-
   const addToFavorites = (movie) => {
-
-  }
+    !favoriteMovies.find((item) => item.title === movie.title) &&
+      setFavoriteMovies([...favoriteMovies, movie]);
+  };
 
   return (
     <div>
@@ -44,17 +45,22 @@ const App = (props) => {
 
           <Switch>
             <Route path="/movies/edit/:id">
+              <EditMovieForm setMovies={setMovies} />
             </Route>
 
             <Route path="/movies/:id">
-              <Movie />
+              <Movie setMovies={setMovies} addToFavorites={addToFavorites} />
             </Route>
 
-            <Route path="/movies">
+            <Route exact path="/movies">
               <MovieList movies={movies} />
             </Route>
 
-            <Route path="/">
+            <Route path="/add">
+              <AddMovie setMovies={setMovies} />
+            </Route>
+
+            <Route exact path="/">
               <Redirect to="/movies" />
             </Route>
           </Switch>
@@ -64,6 +70,4 @@ const App = (props) => {
   );
 };
 
-
 export default App;
-
